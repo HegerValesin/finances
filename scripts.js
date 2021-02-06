@@ -11,7 +11,7 @@ const Modal = {
     }
 }
 
-const Storage = {
+const Storage = {//insere ou busca os dados no Local Storge
     get() {
         return JSON.parse(localStorage.getItem("HeD.finances:transactions")) || []
     },
@@ -35,7 +35,7 @@ const Transaction = {
         App.reload()
     },
 
-    incomes() {
+    incomes() { 
         let income = 0;
           Transaction.all.forEach(transaction => {
               if( transaction.amount > 0 ) {
@@ -72,8 +72,9 @@ const DOM = {
 
     },
     innerHTMLTransaction(transaction, index) {
-        const CSSclass = transaction.amount > 0 ? "income" : "expense"
-
+       
+        const CSSclass = transaction.rdEntSai > 0 ? "income" : "expense"
+        
         const amount = Utils.formatCurrency(transaction.amount)
 
         const html = `
@@ -104,9 +105,10 @@ const DOM = {
 }
 
 const Utils = {
+
     formatAmount(value) {
-        value = Number(value) * 100 // ou Number(value.replace(/\,\./g, "")) * 100 tbm poderia ser assim
-        return value
+        value = Number(value) * 100 // ou Number(value.replace(/\,?\.?/g, "")) * 100 tbm poderia ser assim ou só o Number(value) * 100
+        return Math.round(value)
     },
 
     formatDate(date) {
@@ -115,8 +117,9 @@ const Utils = {
     },
 
     formatCurrency(value) {
-        const signal = Number(value) < 0 ? "-" : ""
-
+    
+        const signal = Number(value) < 0 ? "-" : "" //Number(value) < 0 ? "-" : "" // mudar sigle para if
+     
         value = String(value).replace(/\D/g, "")
 
         value = Number(value) / 100
@@ -130,39 +133,46 @@ const Utils = {
     }
 }
 
-const Form = {
+const Form = {//foi acrecentado o type rdEntSai
     description: document.querySelector('input#description'),
+    rdEntSai: document.querySelector('input.rdEntSai'),
     amount: document.querySelector('input#amount'),
     date: document.querySelector('input#date'),
 
-    getValues() {
+    getValues() { //foi acrecentado o tipe rdEntSai
         return {
             description: Form.description.value,
+            rdEntSai: Form.rdEntSai.checked,
             amount: Form.amount.value,
             date: Form.date.value
         }
     },
 
     validateFields() {
-        const { description, amount, date } = Form.getValues()
+
+        const { description, rdEntSai, amount, date } = Form.getValues()
        
-        if( description.trim() === "" || 
+        if( description.trim() === "" ||
+          //  rdEntSai.trim() === "" ||
             amount.trim() === "" || 
             date.trim() === "") {
-                throw new Error("Por favor preencha todos os campos")
+                throw new Error("Por favor preencha todos os campos ou selecionar se é Entreda ou Saída!")
         }
     },
 
     formatValues() {
-        let { description, amount, date } = Form.getValues()
-
+        let { description, rdEntSai, amount, date } = Form.getValues()
+    
+        if (rdEntSai == false){
+            amount = -+amount
+        } 
         amount = Utils.formatAmount(amount)
-        console.log(amount)
-
+          
         date = Utils.formatDate(date)
 
         return {
             description,
+            rdEntSai,
             amount,
             date
         }
@@ -184,7 +194,7 @@ const Form = {
            Transaction.add(transaction)
            Form.clearFields()
            Modal.close()
-            
+         
         } catch (error) {
             alert(error.message)
         }        

@@ -277,6 +277,36 @@ input {
 .input-group.actions .button,
 .input-group.actions button {
     width: 48%;
+} 
+
+input[type=radio]{
+    width: 100px;
+    height: 40px;    
+    margin-top: 10px;
+    margin-bottom: 0,25px;
+
+}
+
+input[type=radio]::after {
+    
+    width: 100px;
+    height: 40px;
+    border: 2px solid var(--green);
+    box-sizing: border-box;
+    background-color: var(--green);
+    content: attr(id);
+    display: block;
+    text-align: center;
+    line-height: 36px;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+input[type=radio]:checked::after {
+    background-color: var(--ligth-green);
+    border: 2px solid var(--ligth-greengreen);
 }
 
 /* Footer ------------------------*/
